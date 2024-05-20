@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide - DEV Community</title>
+      <meta name="last-updated" content="2024-05-20 09:06:12 UTC">
+      <meta name="user-signed-in" content="false">
+      <meta name="head-cached-at" content="1716195972">
+        <!-- Experimental web monetization payment pointer for micropayments -->
+        <!-- It lets readers make micropayments to websites they visit. -->
+        <!-- This is step 1: Get live in production to test for platform-wide payment pointer. -->
+        <!-- Step 2: Allow authors to set their payment pointer so they can directly monetize their content based on visitors. -->
+        <!-- Step 3: Enable further functionality based on what we learn from this experimentation and how the ecosystem evolves. -->
+        <meta name="monetization" content="$ilp.uphold.com/24HhrUGG7ekn">
+      <meta name="environment" content="production">
+      <link rel="stylesheet" href="https://dev.to/assets/minimal-73242ac80b55d8f76884e7a6534c028269ea83bcc00deb2e779a98fd9ade9b82.css" media="all" id="main-minimal-stylesheet" />
+<link rel="stylesheet" href="https://dev.to/assets/views-64d5fff92cc913e57b90d60da8f10d00138c946bcd9212518cbdbd2fb73efe93.css" media="all" id="main-views-stylesheet" />
+<link rel="stylesheet" href="https://dev.to/assets/crayons-d3c4971e589c6e09f64f69d4cd73231c1e58b7b2ed635582e14d8e86960553ed.css" media="all" id="main-crayons-stylesheet" />
+
+      <script src="https://dev.to/assets/base-50f903db06d50c91cbe65287db8ed07043334a67b0e3644a91cdd1dad87d2c14.js" defer="defer"></script>
+<script src="https://dev.to/assets/application-603d512a5e7f160c83531d0e48a0c9074a5fc8e73afd638e133ec5f8a697d72f.js" defer="defer"></script>
+<script src="https://dev.to/assets/baseInitializers-bc498cfd7bb7d2a2da59d68d0b2055cc2dd26fee3669ab88edbb396d37bc3369.js" defer="defer"></script>
+<script src="https://dev.to/assets/Search-861e462698f90f7c2f554a7d0c34bf414f868fb6a08dcf0406d2b04b8e972a3b.js" defer="defer"></script>
+<script src="https://dev.to/assets/baseTracking-5bcf7e19f64f2e4fe8b8fc5ed4d855faf7dbeba920699889fa8510025ef0fcb7.js" defer="defer"></script>
+      
+    <link rel="canonical" href="https://dev.to/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2" />
+    <meta name="description" content="In Go, organizing code into packages and importing them is a fundamental concept for writing modular... Tagged with webdev, beginners, programming, go.">
+    <meta name="keywords" content="webdev, beginners, programming, go, software, coding, development, engineering, inclusive, community">
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://dev.to/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2" />
+    <meta property="og:title" content="Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide" />
+    <meta property="og:description" content="In Go, organizing code into packages and importing them is a fundamental concept for writing modular..." />
+    <meta property="og:site_name" content="DEV Community" />
+    <meta name="twitter:site" content="@thepracticaldev">
+    <meta name="twitter:creator" content="@">
+    <meta name="twitter:title" content="Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide">
+    <meta name="twitter:description" content="In Go, organizing code into packages and importing them is a fundamental concept for writing modular...">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:widgets:new-embed-design" content="on">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+      <meta property="og:image" content="https://media.dev.to/cdn-cgi/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png" />
+      <meta name="twitter:image:src" content="https://media.dev.to/cdn-cgi/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png">
+
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+      <link rel="icon" type="image/x-icon" href="https://res.cloudinary.com/practicaldev/image/fetch/s--E8ak4Hr1--/c_limit,f_auto,fl_progressive,q_auto,w_32/https://dev-to.s3.us-east-2.amazonaws.com/favicon.ico" />
+      <link rel="apple-touch-icon" href="https://media.dev.to/cdn-cgi/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png">
+      <link rel="apple-touch-icon" sizes="152x152" href="https://media.dev.to/cdn-cgi/image/width=152,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png">
+      <link rel="apple-touch-icon" sizes="180x180" href="https://media.dev.to/cdn-cgi/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png">
+      <link rel="apple-touch-icon" sizes="167x167" href="https://media.dev.to/cdn-cgi/image/width=167,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png">
+      <link href="https://media.dev.to/cdn-cgi/image/width=192,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png" rel="icon" sizes="192x192" />
+      <link href="https://media.dev.to/cdn-cgi/image/width=128,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png" rel="icon" sizes="128x128" />
+      <meta name="apple-mobile-web-app-title" content="dev.to">
+      <meta name="application-name" content="dev.to">
+      <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+      <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+      <link rel="search" href="https://dev.to/open-search.xml" type="application/opensearchdescription+xml" title="DEV Community" />
+
+      <meta property="forem:name" content="DEV Community" />
+      <meta property="forem:logo" content="https://media.dev.to/cdn-cgi/image/width=512,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png" />
+      <meta property="forem:domain" content="dev.to" />
+    <style>
+  @keyframes barrelRoll {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .articletag-doabarrelroll {
+    background: #010100;
+    background: url(https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fj27fydricaw99jhkzwic.png) no-repeat center center fixed;
+    background-size: cover
+  }
+
+  .articletag-doabarrelroll .crayons-layout {
+    animation: barrelRoll 2s ease-in-out 1; /* Animation name, duration, timing function, iteration count */
+  }
+
+  .articletag-perfectlycromulent {
+    background: #f4f4f4;
+    background: url(https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Frzs6a59uuxjx328uu9p7.png) repeat;
+  }
+
+  @keyframes vibrate {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.articletag-shakethingsup {
+  animation: vibrate 0.1s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .articletag-shakethingsup {
+    animation: none;
+  }
+  .articletag-doabarrelroll .crayons-layout {
+    animation: none;
+  }
+}
+</style>
+  </head>
+      <body
+        class="sans-serif-article-body default-header"
+        data-user-status="logged-out"
+        data-community-name="DEV Community"
+        data-locale="en"
+        data-honeybadger-key="hbp_nqu4Y66HuEKlD6YRGssZuRQnPOjDm50J8Zkr"
+        data-deployed-at="2024-05-18T00:06:32Z"
+        data-latest-commit-id="eca6d6897abd63ddcd907a524a0abe81accee793"
+        data-ga-tracking="UA-71991109-1"
+        data-cookie-banner-user-context="logged_out_only"
+        data-cookie-banner-platform-context="off"
+        data-algolia-id="PRSOBFP46H"
+        data-algolia-search-key="9aa7d31610cba78851c9b1f63776a9dd"
+        data-algolia-display="true"
+        data-ga4-tracking-id="G-TYEM8Y3JN3">
+        <link rel="stylesheet" href="https://dev.to/assets/minimal-73242ac80b55d8f76884e7a6534c028269ea83bcc00deb2e779a98fd9ade9b82.css" media="all" id="secondary-minimal-stylesheet" />
+<link rel="stylesheet" href="https://dev.to/assets/views-64d5fff92cc913e57b90d60da8f10d00138c946bcd9212518cbdbd2fb73efe93.css" media="all" id="secondary-views-stylesheet" />
+<link rel="stylesheet" href="https://dev.to/assets/crayons-d3c4971e589c6e09f64f69d4cd73231c1e58b7b2ed635582e14d8e86960553ed.css" media="all" id="secondary-crayons-stylesheet" />
+
+        <div id="body-styles">
+          <style>
+            :root {
+              --accent-brand-lighter-rgb: 80, 99, 301;
+              --accent-brand-rgb: 59, 73, 223;
+              --accent-brand-darker-rgb: 47, 58, 178;
+            }
+          </style>
+        </div>
+        <div id="audiocontent" data-podcast="">
+          
+        </div>
+        <div class="navigation-progress" id="navigation-progress"></div>
+<header id="topbar" class="crayons-header topbar print-hidden">
+  <span id="route-change-target" tabindex="-1"></span>
+  <a href="#main-content" class="skip-content-link">Skip to content</a>
+  <div class="crayons-header__container">
+    <span class="inline-block m:hidden ">
+      <button class="c-btn c-btn--icon-alone js-hamburger-trigger mx-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="a6q17tm28ar0pdkc9jydz0z83b795hkt" class="crayons-icon"><title id="a6q17tm28ar0pdkc9jydz0z83b795hkt">Navigation menu</title>
+    <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"></path>
+</svg>
+
+      </button>
+    </span>
+    <a href="/" class="site-logo" aria-label="DEV Community Home">
+    <img class="site-logo__img" src="https://dev-to-uploads.s3.amazonaws.com/uploads/logos/resized_logo_UQww2soKuUsjaOGNB38o.png" alt="DEV Community">
+</a>
+
+
+    <div class="crayons-header--search js-search-form" id="header-search">
+      <form accept-charset="UTF-8" method="get" action="/search" role="search">
+        <div class="crayons-fields crayons-fields--horizontal">
+          <div class="crayons-field flex-1 relative">
+            <input id="search-input" class="crayons-header--search-input crayons-textfield js-search-input" type="text" id="nav-search" name="q" placeholder="Search..." autocomplete="off" />
+            <button type="submit" aria-label="Search" class="c-btn c-btn--icon-alone absolute inset-px right-auto mt-0 py-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="ajt72b5i30yx6tl2dp1nopcmwtry8l8k" aria-hidden="true" class="crayons-icon"><title id="ajt72b5i30yx6tl2dp1nopcmwtry8l8k">Search</title>
+    <path d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0111 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 01-1.969 5.617zm-2.006-.742A6.977 6.977 0 0018 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 004.875-1.975l.15-.15z"></path>
+</svg>
+
+            </button>
+
+            <a class="crayons-header--search-brand-indicator" href="https://www.algolia.com/developers/?utm_source=devto&utm_medium=referral" target="_blank" rel="noopener noreferrer">
+                Powered by
+                <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" width="24" height="24" viewBox="0 0 500 500.34" role="img" aria-labelledby="asdpxw3apk8ig69zms775ybqefoiyh5q" aria-hidden="true" class="crayons-icon"><title id="asdpxw3apk8ig69zms775ybqefoiyh5q">Search</title>
+  <defs></defs><path class="cls-1" d="M250,0C113.38,0,2,110.16,.03,246.32c-2,138.29,110.19,252.87,248.49,253.67,42.71,.25,83.85-10.2,120.38-30.05,3.56-1.93,4.11-6.83,1.08-9.52l-23.39-20.74c-4.75-4.22-11.52-5.41-17.37-2.92-25.5,10.85-53.21,16.39-81.76,16.04-111.75-1.37-202.04-94.35-200.26-206.1,1.76-110.33,92.06-199.55,202.8-199.55h202.83V407.68l-115.08-102.25c-3.72-3.31-9.43-2.66-12.43,1.31-18.47,24.46-48.56,39.67-81.98,37.36-46.36-3.2-83.92-40.52-87.4-86.86-4.15-55.28,39.65-101.58,94.07-101.58,49.21,0,89.74,37.88,93.97,86.01,.38,4.28,2.31,8.28,5.53,11.13l29.97,26.57c3.4,3.01,8.8,1.17,9.63-3.3,2.16-11.55,2.92-23.6,2.07-35.95-4.83-70.39-61.84-127.01-132.26-131.35-80.73-4.98-148.23,58.18-150.37,137.35-2.09,77.15,61.12,143.66,138.28,145.36,32.21,.71,62.07-9.42,86.2-26.97l150.36,133.29c6.45,5.71,16.62,1.14,16.62-7.48V9.49C500,4.25,495.75,0,490.51,0H250Z"></path>
+</svg>
+
+                Algolia
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="flex items-center h-100 ml-auto">
+      <a class="c-link c-link--icon-alone c-link--block m:hidden mx-1" id="search-link" aria-label="Search" href="/search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="atq7cad58t4sp8qykdon7lv1yqtu8pqs" class="crayons-icon"><title id="atq7cad58t4sp8qykdon7lv1yqtu8pqs">Search</title>
+    <path d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0111 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 01-1.969 5.617zm-2.006-.742A6.977 6.977 0 0018 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 004.875-1.975l.15-.15z"></path>
+</svg>
+
+      </a>
+        <div class="flex" id="authentication-top-nav-actions">
+          <span class="hidden m:block">
+            <a href="/enter" class="c-link c-link--block mr-2 whitespace-nowrap ml-auto" data-no-instant>
+              Log in
+            </a>
+          </span>
+
+          <a href="/enter?state=new-user" data-tracking-id="ca_top_nav" data-tracking-source="top_navbar" class="c-cta c-cta--branded whitespace-nowrap mr-2" data-no-instant>
+            Create account
+          </a>
+        </div>
+    </div>
+  </div>
+</header>
+
+<div class="hamburger">
+  <div class="hamburger__content">
+    <header class="hamburger__content__header">
+      <h2 class="fs-l fw-bold flex-1 break-word lh-tight">DEV Community</h2>
+
+      <button class="c-btn c-btn--icon-alone js-hamburger-trigger shrink-0" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="a9uyojntzw4ygvl5fyc3b8ofo06sc80j" aria-hidden="true" class="crayons-icon c-btn__icon"><title id="a9uyojntzw4ygvl5fyc3b8ofo06sc80j">Close</title><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636l4.95 4.95z"></path></svg>
+
+      </button>
+    </header>
+
+    <div class="p-2 js-navigation-links-container" id="authentication-hamburger-actions">
+    </div>
+  </div>
+  <div class="hamburger__overlay js-hamburger-trigger"></div>
+</div>
+
+
+        <div id="active-broadcast" class="broadcast-wrapper"></div>
+  <div id="base-payment-pointer" data-payment-pointer="$ilp.uphold.com/24HhrUGG7ekn"></div>
+<div id="page-content" class="wrapper stories stories-show articletag-webdev articletag-beginners articletag-programming articletag-go articleuser-572807" data-current-page="stories-show">
+  <div id="page-content-inner">
+    <div id="page-route-change" class="screen-reader-only" aria-live="polite" aria-atomic="true"></div>
+
+    
+
+
+<style>
+  .html-variant-wrapper { display: none}
+</style>
+
+<script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.2.10/webcomponents-loader.js"
+        integrity="sha384-3HK5hxQbkFqOIxMbpROlRmRtYl2LBZ52t+tqcjzsmr9NJuOWQxl8RgQSyFvq2lhy"
+        crossorigin="anonymous" defer></script>
+
+  <script src="https://dev.to/assets/webShare-0686f0b9ac40589694ef6ae6a6202c44119bc781c254f6cf6d52d8a008461156.js" defer="defer"></script>
+<script src="https://dev.to/assets/articlePage-e2aa445b3eaabf25ee8199d3744a879ef1b101bd8d5aff96436b91ff4acc5550.js" defer="defer"></script>
+<script src="https://dev.to/assets/commentDropdowns-6923173a65f4931678c93b3334605057ce26a96a1634dcd5d20d90e65766534f.js" defer="defer"></script>
+
+    <script type="application/ld+json">
+      {"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://dev.to/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2"},"url":"https://dev.to/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2","image":["https://media.dev.to/cdn-cgi/image/width=1080,height=1080,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png","https://media.dev.to/cdn-cgi/image/width=1280,height=720,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png","https://media.dev.to/cdn-cgi/image/width=1600,height=900,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png"],"publisher":{"@context":"http://schema.org","@type":"Organization","name":"DEV Community","logo":{"@context":"http://schema.org","@type":"ImageObject","url":"https://media.dev.to/cdn-cgi/image/width=192,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png","width":"192","height":"192"}},"headline":"Organizing Code into Packages and Importing in Go: A Beginner's Guide","author":{"@context":"http://schema.org","@type":"Person","url":"https://dev.to/avinashtechlvr","name":"Avinash Chodavarapu"},"datePublished":"2023-07-03T14:43:51Z","dateModified":"2023-07-03T15:23:19Z"}
+    </script>
+
+  
+<div class="crayons-layout crayons-layout--3-cols crayons-layout--article">
+  <aside class="crayons-layout__sidebar-left" aria-label="Article actions">
+    <div class="crayons-article-actions print-hidden">
+  <div class="crayons-article-actions__inner">
+
+    
+<div class="reaction-drawer__outer hoverdown" style="">
+  <button
+    id="reaction-drawer-trigger"
+    aria-label="reaction-drawer-trigger"
+    aria-pressed="false"
+    class="hoverdown-trigger crayons-reaction pseudo-reaction crayons-tooltip__activator relative">
+      <span class="crayons-reaction__icon crayons-reaction__icon--borderless crayons-reaction--like crayons-reaction__icon--inactive" style="width: 40px; height: 40px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-hidden="true" class="crayons-icon">
+    <g clip-path="url(#clip0_988_3276)">
+        <path d="M19 14V17H22V19H18.999L19 22H17L16.999 19H14V17H17V14H19ZM20.243 4.75698C22.505 7.02498 22.583 10.637 20.479 12.992L19.059 11.574C20.39 10.05 20.32 7.65998 18.827 6.16998C17.324 4.67098 14.907 4.60698 13.337 6.01698L12.002 7.21498L10.666 6.01798C9.09103 4.60598 6.67503 4.66798 5.17203 6.17198C3.68203 7.66198 3.60703 10.047 4.98003 11.623L13.412 20.069L12 21.485L3.52003 12.993C1.41603 10.637 1.49503 7.01898 3.75603 4.75698C6.02103 2.49298 9.64403 2.41698 12 4.52898C14.349 2.41998 17.979 2.48998 20.242 4.75698H20.243Z" fill="#525252"></path>
+    </g>
+    <defs>
+        <clipPath id="clip0_988_3276">
+        <rect width="24" height="24" fill="white"></rect>
+        </clipPath>
+    </defs>
+</svg>
+
+      </span>
+      <span class="crayons-reaction__icon crayons-reaction__icon--borderless crayons-reaction__icon--active" style="width: 40px; height: 40px">
+        <img aria_hidden="true" height="24" width="24" src="https://dev.to/assets/heart-plus-active-9ea3b22f2bc311281db911d416166c5f430636e76b15cd5df6b3b841d830eefa.svg" />
+      </span>
+      <span class="crayons-reaction__count" id="reaction_total_count">
+        <span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span>
+      </span>
+      <span class="crayons-tooltip__content">
+        Add reaction
+      </span>
+  </button>
+
+  <div class="reaction-drawer" aria-expanded="false">
+    <div class="reaction-drawer__container">
+        <button
+  id="reaction-butt-like"
+  name="Like"
+  aria-label="Like"
+  aria-pressed="false"
+  class="crayons-reaction crayons-tooltip__activator relative pt-2 pr-2 pb-1 pl-2"
+  data-category="like">
+    <span class="crayons-reaction__icon crayons-reaction__icon--inactive p-0">
+      <img aria_hidden="true" height="32" width="32" src="https://dev.to/assets/sparkle-heart-5f9bee3767e18deb1bb725290cb151c25234768a0e9a2bd39370c382d02920cf.svg" />
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-like"><span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span></span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Like
+    </span>
+</button>
+
+        <button
+  id="reaction-butt-unicorn"
+  name="Unicorn"
+  aria-label="Unicorn"
+  aria-pressed="false"
+  class="crayons-reaction crayons-tooltip__activator relative pt-2 pr-2 pb-1 pl-2"
+  data-category="unicorn">
+    <span class="crayons-reaction__icon crayons-reaction__icon--inactive p-0">
+      <img aria_hidden="true" height="32" width="32" src="https://dev.to/assets/multi-unicorn-b44d6f8c23cdd00964192bedc38af3e82463978aa611b4365bd33a0f1f4f3e97.svg" />
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-unicorn"><span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span></span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Unicorn
+    </span>
+</button>
+
+        <button
+  id="reaction-butt-exploding_head"
+  name="Exploding Head"
+  aria-label="Exploding Head"
+  aria-pressed="false"
+  class="crayons-reaction crayons-tooltip__activator relative pt-2 pr-2 pb-1 pl-2"
+  data-category="exploding_head">
+    <span class="crayons-reaction__icon crayons-reaction__icon--inactive p-0">
+      <img aria_hidden="true" height="32" width="32" src="https://dev.to/assets/exploding-head-daceb38d627e6ae9b730f36a1e390fca556a4289d5a41abb2c35068ad3e2c4b5.svg" />
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-exploding_head"><span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span></span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Exploding Head
+    </span>
+</button>
+
+        <button
+  id="reaction-butt-raised_hands"
+  name="Raised Hands"
+  aria-label="Raised Hands"
+  aria-pressed="false"
+  class="crayons-reaction crayons-tooltip__activator relative pt-2 pr-2 pb-1 pl-2"
+  data-category="raised_hands">
+    <span class="crayons-reaction__icon crayons-reaction__icon--inactive p-0">
+      <img aria_hidden="true" height="32" width="32" src="https://dev.to/assets/raised-hands-74b2099fd66a39f2d7eed9305ee0f4553df0eb7b4f11b01b6b1b499973048fe5.svg" />
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-raised_hands"><span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span></span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Raised Hands
+    </span>
+</button>
+
+        <button
+  id="reaction-butt-fire"
+  name="Fire"
+  aria-label="Fire"
+  aria-pressed="false"
+  class="crayons-reaction crayons-tooltip__activator relative pt-2 pr-2 pb-1 pl-2"
+  data-category="fire">
+    <span class="crayons-reaction__icon crayons-reaction__icon--inactive p-0">
+      <img aria_hidden="true" height="32" width="32" src="https://dev.to/assets/fire-f60e7a582391810302117f987b22a8ef04a2fe0df7e3258a5f49332df1cec71e.svg" />
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-fire"><span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span></span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Fire
+    </span>
+</button>
+
+    </div>
+  </div>
+</div>
+
+<button
+  id="reaction-butt-comment"
+  aria-label="Jump to Comments"
+  aria-pressed="false"
+  class="crayons-reaction crayons-reaction--comment crayons-tooltip__activator relative"
+  data-category="comment">
+    <span class="crayons-reaction__icon crayons-reaction__icon--borderless crayons-reaction__icon--inactive">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-hidden="true" class="crayons-icon">
+    <path d="M10 3h4a8 8 0 010 16v3.5c-5-2-12-5-12-11.5a8 8 0 018-8zm2 14h2a6 6 0 000-12h-4a6 6 0 00-6 6c0 3.61 2.462 5.966 8 8.48V17z"></path>
+</svg>
+
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-comment" data-count="0">
+      <span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span>
+    </span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Jump to Comments
+    </span>
+</button>
+
+<button
+  id="reaction-butt-readinglist"
+  aria-label="Add to reading list"
+  aria-pressed="false"
+  class="crayons-reaction crayons-reaction--readinglist crayons-tooltip__activator relative"
+  data-category="readinglist">
+    <span class="crayons-reaction__icon crayons-reaction__icon--borderless crayons-reaction__icon--inactive">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-hidden="true" class="crayons-icon">
+    <path d="M5 2h14a1 1 0 011 1v19.143a.5.5 0 01-.766.424L12 18.03l-7.234 4.536A.5.5 0 014 22.143V3a1 1 0 011-1zm13 2H6v15.432l6-3.761 6 3.761V4z"></path>
+</svg>
+
+    </span>
+    <span class="crayons-reaction__count" id="reaction-number-readinglist"><span class="bg-base-40 opacity-25 p-2 inline-block radius-default"></span></span>
+
+    <span data-testid="tooltip" class="crayons-tooltip__content">
+      Save
+    </span>
+</button>
+
+
+
+    <div id="mod-actions-menu-btn-area" class="print-hidden trusted-visible-block align-center">
+    </div>
+    <div class="align-center m:relative">
+      <button id="article-show-more-button" aria-controls="article-show-more-dropdown" aria-expanded="false" aria-haspopup="true" class="dropbtn crayons-btn crayons-btn--ghost-dimmed crayons-btn--icon-rounded" aria-label="Share post options">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" role="img" aria-labelledby="aa2fywsew9mraopltju7pawgmriyx2t1" aria-hidden="true" class="crayons-icon dropdown-icon"><title id="aa2fywsew9mraopltju7pawgmriyx2t1">More...</title><path fill-rule="evenodd" clip-rule="evenodd" d="M7 12a2 2 0 11-4 0 2 2 0 014 0zm7 0a2 2 0 11-4 0 2 2 0 014 0zm5 2a2 2 0 100-4 2 2 0 000 4z"></path></svg>
+
+      </button>
+
+      <div id="article-show-more-dropdown" class="crayons-dropdown side-bar left-2 right-2 m:right-auto m:left-100 s:left-auto mb-1 m:mb-0 top-unset bottom-100 m:top-0 m:bottom-unset">
+        <div>
+          <button
+            id="copy-post-url-button"
+            class="flex justify-between crayons-link crayons-link--block w-100 bg-transparent border-0"
+            data-postUrl="https://dev.to/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2">
+            <span class="fw-bold">Copy link</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="article-copy-icon" role="img" aria-labelledby="abai23qdkospqn1rmgwlo6nbs80hmx4l" aria-hidden="true" class="crayons-icon mx-2 shrink-0"><title id="abai23qdkospqn1rmgwlo6nbs80hmx4l">Copy link</title>
+    <path d="M7 6V3a1 1 0 011-1h12a1 1 0 011 1v14a1 1 0 01-1 1h-3v3c0 .552-.45 1-1.007 1H4.007A1 1 0 013 21l.003-14c0-.552.45-1 1.007-1H7zm2 0h8v10h2V4H9v2zm-2 5v2h6v-2H7zm0 4v2h6v-2H7z"></path>
+</svg>
+
+          </button>
+          <div id="article-copy-link-announcer" aria-live="polite" class="crayons-notice crayons-notice--success my-2 p-1" aria-live="polite" hidden>Copied to Clipboard</div>
+        </div>
+
+        <div class="Desktop-only">
+          <a
+            target="_blank"
+            class="crayons-link crayons-link--block"
+            rel="noopener"
+            href='https://twitter.com/intent/tweet?text=%22Organizing%20Code%20into%20Packages%20and%20Importing%20in%20Go%3A%20A%20Beginner%27s%20Guide%22%20by%20Avinash%20Chodavarapu%20%23DEVCommunity%20https%3A%2F%2Fdev.to%2Favinashtechlvr%2Forganizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2'>
+            Share to Twitter
+          </a>
+          <a
+            target="_blank"
+            class="crayons-link crayons-link--block"
+            rel="noopener"
+            href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fdev.to%2Favinashtechlvr%2Forganizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2&title=Organizing%20Code%20into%20Packages%20and%20Importing%20in%20Go%3A%20A%20Beginner%27s%20Guide&summary=In%20Go%2C%20organizing%20code%20into%20packages%20and%20importing%20them%20is%20a%20fundamental%20concept%20for%20writing%20modular...&source=DEV%20Community">
+            Share to LinkedIn
+          </a>
+          <a
+            target="_blank"
+            class="crayons-link crayons-link--block"
+            rel="noopener"
+            href="https://www.reddit.com/submit?url=https%3A%2F%2Fdev.to%2Favinashtechlvr%2Forganizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2&title=Organizing%20Code%20into%20Packages%20and%20Importing%20in%20Go%3A%20A%20Beginner%27s%20Guide">
+            Share to Reddit
+          </a>
+          <a
+            target="_blank"
+            class="crayons-link crayons-link--block"
+            rel="noopener"
+            href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fdev.to%2Favinashtechlvr%2Forganizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2&t=Organizing%20Code%20into%20Packages%20and%20Importing%20in%20Go%3A%20A%20Beginner%27s%20Guide">
+            Share to Hacker News
+          </a>
+          <a
+            target="_blank"
+            class="crayons-link crayons-link--block"
+            rel="noopener"
+            href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Fdev.to%2Favinashtechlvr%2Forganizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2">
+            Share to Facebook
+          </a>
+          <a
+            target="_blank"
+            class="crayons-link crayons-link--block"
+            rel="noopener"
+            href="https://toot.kytta.dev/?text=https%3A%2F%2Fdev.to%2Favinashtechlvr%2Forganizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2">
+            Share to Mastodon
+          </a>
+        </div>
+
+        <web-share-wrapper shareurl="https://dev.to/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2" sharetitle="Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide" sharetext="In Go, organizing code into packages and importing them is a fundamental concept for writing modular..." template="web-share-button">
+        </web-share-wrapper>
+        <template id="web-share-button">
+          <a href="#" class="dropdown-link-row crayons-link crayons-link--block">Share Post via...</a>
+        </template>
+
+        <a href="/report-abuse" class="crayons-link crayons-link--block">Report Abuse</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </aside>
+
+  <main id="main-content" class="crayons-layout__content grid gap-4">
+    <div class="article-wrapper">
+
+
+      <article class="crayons-card crayons-article mb-4"
+        id="article-show-container"
+        data-article-id="1523044"
+        data-article-slug="organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2"
+        data-author-id="572807"
+        data-author-name="Avinash Chodavarapu"
+        data-author-username="avinashtechlvr"
+        data-co-author-ids=""
+        data-path="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2"
+        data-pin-path="/stories/feed/pinned_article"
+        data-pinned-article-id=""
+        data-published="true"
+        data-scheduled="false"
+         
+         >
+        <header class="crayons-article__header" id="main-title">
+            <a class="crayons-article__cover" href="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png">
+              <img
+                src="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png"
+                style="aspect-ratio: auto 1000 / 420;"
+                width="1000" height="420"
+                class="crayons-article__cover__image" alt="Cover image for Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide">
+            </a>
+
+          <div class="crayons-article__header__meta">
+            <div class="flex s:items-start flex-col s:flex-row">
+              <div id="action-space" class="crayons-article__actions mb-4 s:mb-0 s:order-last"></div>
+              <div class="flex flex-1 mb-5 items-start">
+                <div class="relative">
+                    <a href="/avinashtechlvr"><img class="radius-full align-middle" src="https://media.dev.to/cdn-cgi/image/width=50,height=50,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F572807%2F13dedbcb-ccad-4f93-82c1-905513bdf043.jpeg" width="40" height="40" alt="Avinash Chodavarapu" /></a>
+                </div>
+                <div class="pl-3 flex-1">
+                  <a href="/avinashtechlvr" class="crayons-link fw-bold">Avinash Chodavarapu</a>
+                  <p class="fs-xs color-base-60">
+                      Posted on <time datetime="2023-07-03T14:43:51Z" class="date">Jul 3, 2023</time>
+
+
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            
+
+            <h1 class="fs-3xl m:fs-4xl l:fs-5xl fw-bold s:fw-heavy lh-tight mb-2 long">
+              Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide
+            </h1>
+
+              <div class="spec__tags flex flex-wrap">
+                  <a class="crayons-tag   " style="
+        --tag-bg: rgba(86, 39, 101, 0.10);
+        --tag-prefix: #562765;
+        --tag-bg-hover: rgba(86, 39, 101, 0.10);
+        --tag-prefix-hover: #562765;
+      " href="/t/webdev"><span class="crayons-tag__prefix">#</span>webdev</a>
+                  <a class="crayons-tag   " style="
+        --tag-bg: rgba(0, 131, 53, 0.10);
+        --tag-prefix: #008335;
+        --tag-bg-hover: rgba(0, 131, 53, 0.10);
+        --tag-prefix-hover: #008335;
+      " href="/t/beginners"><span class="crayons-tag__prefix">#</span>beginners</a>
+                  <a class="crayons-tag   " style="
+        --tag-bg: rgba(137, 6, 6, 0.10);
+        --tag-prefix: #890606;
+        --tag-bg-hover: rgba(137, 6, 6, 0.10);
+        --tag-prefix-hover: #890606;
+      " href="/t/programming"><span class="crayons-tag__prefix">#</span>programming</a>
+                  <a class="crayons-tag   " style="
+        --tag-bg: rgba(41, 190, 176, 0.10);
+        --tag-prefix: #29BEB0;
+        --tag-bg-hover: rgba(41, 190, 176, 0.10);
+        --tag-prefix-hover: #29BEB0;
+      " href="/t/go"><span class="crayons-tag__prefix">#</span>go</a>
+              </div>
+          </div>
+        </header>
+
+        <div class="crayons-article__main">
+            
+  <nav class="series-switcher crayons-card crayons-card--secondary">
+    <header class="crayons-card__header">
+      <h2 class="crayons-subtitle-2">
+        <a href="/avinashtechlvr/series/22308">Go Tutorials (11 Part Series)</a>
+      </h2>
+    </header>
+
+    <div class="series-switcher__list">
+
+          <a
+            href="/avinashtechlvr/what-is-go-language-and-why-go-language-359c"
+            class="crayons-link crayons-link--contentful series-switcher__link  "
+            data-preload-image=""
+            title="Published Mar 4 &#39;23">
+            <span class="series-switcher__num">1</span>
+            <span class="series-switcher__title">What is Go Language and Why Go Language?</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/installing-and-running-your-first-program-in-golang-2kb1"
+            class="crayons-link crayons-link--contentful series-switcher__link  "
+            data-preload-image=""
+            title="Published Mar 19 &#39;23">
+            <span class="series-switcher__num">2</span>
+            <span class="series-switcher__title">Installing and Running Your First Program in Golang</span>
+          </a>
+            <a
+              href="/avinashtechlvr/data-types-overview-of-gos-basic-3j98"
+              class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--inbetween"
+              data-preload-image=""
+              id="collection-link-inbetween"
+              data-no-instant
+              title="View more">
+              <span class="series-switcher__num">...</span>
+              <span class="series-switcher__title">7 more parts...</span>
+            </a>
+
+          <a
+            href="/avinashtechlvr/data-types-overview-of-gos-basic-3j98"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Mar 21 &#39;23">
+            <span class="series-switcher__num">3</span>
+            <span class="series-switcher__title">Data Types: Overview of Go&#39;s basic</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/variables-and-constants-declaration-and-usage-4ica"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Mar 25 &#39;23">
+            <span class="series-switcher__num">4</span>
+            <span class="series-switcher__title">Variables and Constants: Declaration and Usage</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/go-lang-a-beginners-guide-to-operators-arithmetic-comparison-and-logical-hpa"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Mar 27 &#39;23">
+            <span class="series-switcher__num">5</span>
+            <span class="series-switcher__title">Go Lang - A Beginner&#39;s Guide to Operators: Arithmetic, Comparison, and Logical</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/go-lang-control-flow-mastering-conditional-statements-loops-and-switch-statements-5eo4"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Apr 8 &#39;23">
+            <span class="series-switcher__num">6</span>
+            <span class="series-switcher__title">Go Lang - Control Flow: Mastering Conditional Statements, Loops, and Switch Statements</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/go-lang-functions-understanding-defining-and-using-functions-in-go-39k2"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published May 7 &#39;23">
+            <span class="series-switcher__num">7</span>
+            <span class="series-switcher__title">Go Lang - Functions: Understanding, Defining, and Using Functions in Go</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/mastering-collections-in-go-a-comprehensive-guide-to-arrays-slices-and-maps-39m"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fm5a9cikovcld8uff6t7f.png"
+            title="Published May 23 &#39;23">
+            <span class="series-switcher__num">8</span>
+            <span class="series-switcher__title">Mastering Collections in Go: A Comprehensive Guide to Arrays, Slices, and Maps</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/mastering-pointers-in-go-an-in-depth-guide-to-efficient-data-manipulation-2nco"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F99n85wbc3cosyo8z7v2w.png"
+            title="Published Jun 7 &#39;23">
+            <span class="series-switcher__num">9</span>
+            <span class="series-switcher__title">Mastering Pointers in Go: An In-Depth Guide to Efficient Data Manipulation</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/understanding-structs-in-go-a-comprehensive-guide-for-beginners-1aki"
+            class="crayons-link crayons-link--contentful series-switcher__link  "
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fcp7kupdbczl3yshe2ib9.gif"
+            title="Published Jun 13 &#39;23">
+            <span class="series-switcher__num">10</span>
+            <span class="series-switcher__title">Understanding Structs in Go: A Comprehensive Guide for Beginners</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2"
+            class="crayons-link crayons-link--contentful series-switcher__link series-switcher__link--active "
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png"
+            title="Published Jul 3 &#39;23">
+            <span class="series-switcher__num">11</span>
+            <span class="series-switcher__title">Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide</span>
+          </a>
+    </div>
+  </nav>
+
+
+          <div class="crayons-article__body text-styles spec__body" data-article-id="1523044" id="article-body">
+            <p>In Go, organizing code into packages and importing them is a fundamental concept for writing modular and reusable code. Packages help structure code into logical units, while imports allow us to use code from other packages. This beginner's guide will walk you through the process of organizing code into packages and importing them in Go, using simple and understandable examples.</p>
+
+<h3>
+  <a name="section-1-package-structure" href="#section-1-package-structure">
+  </a>
+  Section 1: Package Structure
+</h3>
+
+<p>In Go, a package is a directory containing one or more Go source files. Here's how you can structure your packages:</p>
+
+<ul>
+<li>Each package should have a unique name, written in lowercase letters.</li>
+<li>All files within the same package should have the same package name.</li>
+<li>Place related files within the same package directory.</li>
+</ul>
+
+<p>For example, let's consider a project directory structure like this:<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight go"><code><span class="n">myproject</span><span class="o">/</span>
+<span class="err">├──</span> <span class="n">main</span><span class="o">.</span><span class="k">go</span>
+<span class="err">└──</span> <span class="n">utils</span><span class="o">/</span>
+    <span class="err">├──</span> <span class="n">math</span><span class="o">.</span><span class="k">go</span>
+    <span class="err">└──</span> <span class="kt">string</span><span class="o">.</span><span class="k">go</span>
+
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="section-2-package-declaration" href="#section-2-package-declaration">
+  </a>
+  Section 2: Package Declaration
+</h3>
+
+<p>The package declaration is placed at the top of each Go source file and specifies the package name. Here's how you do it:</p>
+
+<ul>
+<li>In each Go source file, include a <code>package</code> declaration followed by the package name.</li>
+<li>For example, if you have a package named "utils," your source files should start with <code>package utils</code>.</li>
+</ul>
+
+<p>In <code>math.go</code>:<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight go"><code><span class="k">package</span> <span class="n">utils</span>
+
+<span class="k">func</span> <span class="n">Add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="p">}</span>
+
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>In <code>string.go</code>:<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight go"><code><span class="k">package</span> <span class="n">utils</span>
+
+<span class="k">func</span> <span class="n">Reverse</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="n">runes</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">rune</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">:=</span> <span class="m">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">runes</span><span class="p">)</span><span class="o">-</span><span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">;</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="m">1</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="m">1</span> <span class="p">{</span>
+        <span class="n">runes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">runes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">runes</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">runes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kt">string</span><span class="p">(</span><span class="n">runes</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="section-3-exported-and-unexported-identifiers" href="#section-3-exported-and-unexported-identifiers">
+  </a>
+  Section 3: Exported and Unexported Identifiers
+</h3>
+
+<p>Go distinguishes between exported and unexported identifiers. Here's what you need to know:</p>
+
+<ul>
+<li>Exported identifiers start with an uppercase letter and can be accessed from other packages.</li>
+<li>Unexported identifiers start with a lowercase letter and are only accessible within the same package.</li>
+<li>Use clear and descriptive names for exported identifiers to enhance code readability.</li>
+</ul>
+
+<h3>
+  <a name="section-4-importing-packages" href="#section-4-importing-packages">
+  </a>
+  Section 4: Importing Packages
+</h3>
+
+<p>Importing packages allows us to use code from other packages. Here's how you import packages in Go:</p>
+
+<ul>
+<li>Use the <code>import</code> keyword followed by the package path.</li>
+<li>The package path can be a local relative path (e.g., "./utils") or an external package path (e.g., "<a href="http://github.com/example/utils">github.com/example/utils</a>").</li>
+<li>You can import multiple packages by using separate import statements.</li>
+</ul>
+
+<p>In <code>main.go</code>:<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight go"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"fmt"</span>
+    <span class="s">"github.com/example/myproject/utils"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">sum</span> <span class="o">:=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Sum:"</span><span class="p">,</span> <span class="n">sum</span><span class="p">)</span>
+
+    <span class="n">reversed</span> <span class="o">:=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Reverse</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Reversed:"</span><span class="p">,</span> <span class="n">reversed</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="section-5-package-aliases" href="#section-5-package-aliases">
+  </a>
+  Section 5: Package Aliases
+</h3>
+
+<p>Package aliases provide a shorter name for frequently used packages or help avoid naming conflicts. Here's how to use package aliases:</p>
+
+<ul>
+<li>Assign an alias to an imported package using the <code>import</code> statement.</li>
+<li>Specify the alias name followed by the package path.</li>
+</ul>
+
+<p>In <code>main.go</code>:<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight go"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"fmt"</span>
+    <span class="n">myutils</span> <span class="s">"github.com/example/myproject/utils"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">sum</span> <span class="o">:=</span> <span class="n">myutils</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Sum:"</span><span class="p">,</span> <span class="n">sum</span><span class="p">)</span>
+
+    <span class="n">reversed</span> <span class="o">:=</span> <span class="n">myutils</span><span class="o">.</span><span class="n">Reverse</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Reversed:"</span><span class="p">,</span> <span class="n">reversed</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="section-6-using-imported-packages" href="#section-6-using-imported-packages">
+  </a>
+  Section 6: Using Imported Packages
+</h3>
+
+<p>Once you've imported a package, you can access its exported identifiers in your code. Here's how:</p>
+
+<ul>
+<li>Use the package name followed by a dot (.) and the identifier name.</li>
+</ul>
+
+<p>By organizing code into packages and importing them in Go, you can write modular and reusable code. This approach enhances code maintainability, fosters collaboration, and enables the development of scalable applications in Go.</p>
+
+<h3>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion:
+</h3>
+
+<p>Organizing code into packages and importing them in Go is essential for writing modular and reusable code. By following the guidelines provided in this beginner's guide, you'll be able to structure your code effectively and utilize code from other packages seamlessly. The provided examples demonstrate the process of organizing code into packages, importing them, and accessing their functionalities. Start organizing your Go code into packages and leverage the power of modularity in your projects.</p>
+
+
+          </div>
+
+            
+  <nav class="series-switcher crayons-card crayons-card--secondary">
+    <header class="crayons-card__header">
+      <h2 class="crayons-subtitle-2">
+        <a href="/avinashtechlvr/series/22308">Go Tutorials (11 Part Series)</a>
+      </h2>
+    </header>
+
+    <div class="series-switcher__list">
+
+          <a
+            href="/avinashtechlvr/what-is-go-language-and-why-go-language-359c"
+            class="crayons-link crayons-link--contentful series-switcher__link  "
+            data-preload-image=""
+            title="Published Mar 4 &#39;23">
+            <span class="series-switcher__num">1</span>
+            <span class="series-switcher__title">What is Go Language and Why Go Language?</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/installing-and-running-your-first-program-in-golang-2kb1"
+            class="crayons-link crayons-link--contentful series-switcher__link  "
+            data-preload-image=""
+            title="Published Mar 19 &#39;23">
+            <span class="series-switcher__num">2</span>
+            <span class="series-switcher__title">Installing and Running Your First Program in Golang</span>
+          </a>
+            <a
+              href="/avinashtechlvr/data-types-overview-of-gos-basic-3j98"
+              class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--inbetween"
+              data-preload-image=""
+              id="collection-link-inbetween"
+              data-no-instant
+              title="View more">
+              <span class="series-switcher__num">...</span>
+              <span class="series-switcher__title">7 more parts...</span>
+            </a>
+
+          <a
+            href="/avinashtechlvr/data-types-overview-of-gos-basic-3j98"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Mar 21 &#39;23">
+            <span class="series-switcher__num">3</span>
+            <span class="series-switcher__title">Data Types: Overview of Go&#39;s basic</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/variables-and-constants-declaration-and-usage-4ica"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Mar 25 &#39;23">
+            <span class="series-switcher__num">4</span>
+            <span class="series-switcher__title">Variables and Constants: Declaration and Usage</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/go-lang-a-beginners-guide-to-operators-arithmetic-comparison-and-logical-hpa"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Mar 27 &#39;23">
+            <span class="series-switcher__num">5</span>
+            <span class="series-switcher__title">Go Lang - A Beginner&#39;s Guide to Operators: Arithmetic, Comparison, and Logical</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/go-lang-control-flow-mastering-conditional-statements-loops-and-switch-statements-5eo4"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published Apr 8 &#39;23">
+            <span class="series-switcher__num">6</span>
+            <span class="series-switcher__title">Go Lang - Control Flow: Mastering Conditional Statements, Loops, and Switch Statements</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/go-lang-functions-understanding-defining-and-using-functions-in-go-39k2"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image=""
+            title="Published May 7 &#39;23">
+            <span class="series-switcher__num">7</span>
+            <span class="series-switcher__title">Go Lang - Functions: Understanding, Defining, and Using Functions in Go</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/mastering-collections-in-go-a-comprehensive-guide-to-arrays-slices-and-maps-39m"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fm5a9cikovcld8uff6t7f.png"
+            title="Published May 23 &#39;23">
+            <span class="series-switcher__num">8</span>
+            <span class="series-switcher__title">Mastering Collections in Go: A Comprehensive Guide to Arrays, Slices, and Maps</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/mastering-pointers-in-go-an-in-depth-guide-to-efficient-data-manipulation-2nco"
+            class="crayons-link crayons-link--contentful series-switcher__link  series-switcher__link--hidden"
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F99n85wbc3cosyo8z7v2w.png"
+            title="Published Jun 7 &#39;23">
+            <span class="series-switcher__num">9</span>
+            <span class="series-switcher__title">Mastering Pointers in Go: An In-Depth Guide to Efficient Data Manipulation</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/understanding-structs-in-go-a-comprehensive-guide-for-beginners-1aki"
+            class="crayons-link crayons-link--contentful series-switcher__link  "
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fcp7kupdbczl3yshe2ib9.gif"
+            title="Published Jun 13 &#39;23">
+            <span class="series-switcher__num">10</span>
+            <span class="series-switcher__title">Understanding Structs in Go: A Comprehensive Guide for Beginners</span>
+          </a>
+
+          <a
+            href="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2"
+            class="crayons-link crayons-link--contentful series-switcher__link series-switcher__link--active "
+            data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ffygpi0fsovlga7wvho7k.png"
+            title="Published Jul 3 &#39;23">
+            <span class="series-switcher__num">11</span>
+            <span class="series-switcher__title">Organizing Code into Packages and Importing in Go: A Beginner&#39;s Guide</span>
+          </a>
+    </div>
+  </nav>
+
+            <div class="js-billboard-container body-billboard-container" data-async-url="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2/billboards/post_body_bottom"></div>
+        </div>
+          <section id="comments" data-follow-button-container="true" data-updated-at="2024-05-20 09:06:12 UTC" class="text-padding mb-4 border-t-1 border-0 border-solid border-base-10">
+      <header class="relative flex justify-between items-center mb-6">
+        <div class="flex items-center">
+          <h2 class="crayons-subtitle-1">
+            Top comments <span class="js-comments-count" data-comments-count="0">(0)</span>
+          </h2>
+        </div>
+
+
+        <div id="comment-subscription" class="print-hidden">
+          <div class="crayons-btn-group">
+            <span class="crayons-btn crayons-btn--outlined">Subscribe</span>
+          </div>
+        </div>
+      </header>
+
+      <div
+        id="comments-container"
+        data-testid="comments-container"
+        data-commentable-id="1523044"
+        data-commentable-type="Article"
+        data-has-recent-comment-activity="false">
+
+          <div id="response-templates-data" class="hidden"></div>
+<script src="https://dev.to/assets/validateFileInputs-6e4e50ee98e8afac08f7a0182e37a640922d52b46c03dcd24442347ebb6dec21.js" defer="defer"></script>
+
+
+<form class="comment-form print-hidden" id="new_comment" action="/comments" accept-charset="UTF-8" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" />
+
+  <input type="hidden" name="authenticity_token" value="NOTHING" id="new_comment_authenticity_token">
+
+    <input value="1523044" autocomplete="off" type="hidden" name="comment[commentable_id]" id="comment_commentable_id" />
+    <input value="Article" autocomplete="off" type="hidden" name="comment[commentable_type]" id="comment_commentable_type" />
+    
+
+  <span class="crayons-avatar m:crayons-avatar--l mr-2 shrink-0">
+    <img src="https://media.dev.to/cdn-cgi/image/width=256,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png" width="32" height="32" alt="pic" class="crayons-avatar__image overflow-hidden" id="comment-primary-user-profile--avatar" loading="lazy" />
+  </span>
+  <div class="comment-form__inner">
+    <div class="comment-form__field" data-tracking-name="comment_form_textfield">
+      <textarea placeholder="Add to the discussion" onfocus="handleFocus(event)" onkeyup="handleKeyUp(event)" onkeydown="handleKeyDown(event)" oninput="handleChange(event)" id="text-area" required="required" class="crayons-textfield comment-textarea crayons-textfield--ghost" aria-label="Add a comment to the discussion" name="comment[body_markdown]">
+</textarea>
+
+    </div>
+
+    <div class="response-templates-container crayons-card crayons-card--secondary p-4 mb-4 comment-form__templates fs-base hidden">
+      <header class="mb-3">
+        <button type="button" class="crayons-btn personal-template-button active" data-target-type="personal" data-form-id="new_comment">Personal</button>
+        <button type="button" class="crayons-btn moderator-template-button hidden" data-target-type="moderator" data-form-id="new_comment">Trusted User</button>
+      </header>
+
+      <div class="personal-responses-container">
+      </div>
+      <div class="moderator-responses-container hidden">
+      </div>
+
+      <a target="_blank" rel="noopener nofollow" href="/settings/response-templates">
+        Create template
+      </a>
+      <p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+    </div>
+
+    <div class="comment-form__preview text-styles text-styles--secondary" id="preview-div"></div>
+
+    <div class="comment-form__buttons mb-4">
+      <button type="submit" class="crayons-btn mr-2 js-btn-enable" onclick="validateField(event)" data-tracking-name="comment_submit_button" disabled>Submit</button>
+      <button type="button" class="preview-toggle crayons-btn crayons-btn--secondary comment-action-preview js-btn-enable mr-2" data-tracking-name="comment_preview_button" disabled>Preview</button>
+      <a href="/404.html" class="dismiss-edit-comment crayons-btn crayons-btn--ghost js-btn-dismiss hidden">Dismiss</a>
+    </div>
+  </div>
+
+  <div class="code-of-conduct" id="toggle-code-of-conduct-checkbox"></div>
+</form>
+
+
+        <div class="comments" id="comment-trees-container">
+        </div>
+      </div>
+
+      <div class="align-center">
+
+
+  <nav class="fs-s align-center block" aria-label="Conduct controls">
+  <a href="/code-of-conduct" class="crayons-link crayons-link--secondary">Code of Conduct</a>
+  <span class="opacity-25 px-2" role="presentation">&bull;</span>
+  <a href="/report-abuse" class="crayons-link crayons-link--secondary">Report abuse</a>
+</nav>
+
+</div>
+
+  </section>
+  <div id="hide-comments-modal" class="hidden">
+  <form id="hide-comments-modal__form" class="hide-comments-modal__form" data-type="json" action="/comments/hide" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" /><input type="hidden" name="_method" value="patch" autocomplete="off" /><input type="hidden" name="authenticity_token" value="aPonAlEXQqFv2oEUceo0YNGKofUQTeP-nYtl6fCR96qWMGUZ889e4_fu1vDjQbvKnxVchQCoxmg0a3qG7Wt7yg" autocomplete="off" />
+    <div class="hide-comments-modal__content">
+      <p class="pb-2">
+        Are you sure you want to hide this comment? It will become hidden in your post, but will still be visible via the comment's <a id="hide-comments-modal__comment-permalink" href="#">permalink</a>.
+      </p>
+      <label class="crayons-field crayons-field--checkbox my-2">
+        <input name="hide_children" type="hidden" value="0" autocomplete="off" /><input class="hide_children crayons-checkbox" type="checkbox" value="1" name="hide_children" id="hide_children" />
+        <p class="crayons-field__label">Hide child comments as well</p>
+      </label>
+      <p class="pb-4 pt-2">
+        <button type="submit" class="crayons-btn">
+          Confirm
+        </button>
+      </p>
+    </div>
+</form>  <p class="fs-s color-base-60">For further actions, you may consider blocking this person and/or <a id="hide-comments-modal__report-link" href="/report-abuse">reporting abuse</a></p>
+</div>
+
+
+
+      </article>
+
+      <div class="pb-4 crayons-layout__comments-billboard">
+        <div class="js-billboard-container pb-4 crayons-layout__comments-billboard" data-async-url="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2/billboards/post_comments"></div>
+      </div>
+
+          <section class="crayons-card crayons-card--secondary text-padding mb-4 print-hidden" id="bottom-content-read-next">
+    <h2 class="crayons-subtitle-1">Read next</h2>
+      <a href="/codeparrot/createbrowserrouter-a-step-up-from-switch-24p1" data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fmrwip4dh7ha5q6fegs36.png" class="crayons-link mt-6 block">
+        <div class="flex items-center">
+          <span class="crayons-avatar crayons-avatar--xl m:crayons-avatar--2xl mr-4 shrink-0">
+              <img loading="lazy" alt="mvaja13 profile image" class="crayons-avatar__image" width="100" height="100" src="https://media.dev.to/cdn-cgi/image/width=100,height=100,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F1264665%2F870e075c-b812-48f3-9322-e1c6474b51ec.jpeg" />
+          </span>
+          <div>
+            <h3 class="fs-xl mb-0 lh-tight">createBrowserRouter A step up from Switch</h3>
+            <p class="opacity-75 pt-1">
+              Gautam Vaja - <time datetime="2024-05-18T14:24:10Z">May 18</time>
+            </p>
+          </div>
+        </div>
+      </a>
+      <a href="/codedancingwithmilos/react-reasons-possibilities-130g" data-preload-image="https://media.dev.to/cdn-cgi/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fq5r04dbxwponprugtt18.png" class="crayons-link mt-6 block">
+        <div class="flex items-center">
+          <span class="crayons-avatar crayons-avatar--xl m:crayons-avatar--2xl mr-4 shrink-0">
+              <img loading="lazy" alt="codedancingwithmilos profile image" class="crayons-avatar__image" width="100" height="100" src="https://media.dev.to/cdn-cgi/image/width=100,height=100,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F228280%2F938f5952-e9c2-4018-b90f-d7726ee90536.jpeg" />
+          </span>
+          <div>
+            <h3 class="fs-xl mb-0 lh-tight">React: Reasons &amp; Possibilities</h3>
+            <p class="opacity-75 pt-1">
+              CodeDancing with Milos - <time datetime="2024-05-14T09:45:09Z">May 14</time>
+            </p>
+          </div>
+        </div>
+      </a>
+      <a href="/servbay/preview-of-php-84-new-features-5551" data-preload-image="" class="crayons-link mt-6 block">
+        <div class="flex items-center">
+          <span class="crayons-avatar crayons-avatar--xl m:crayons-avatar--2xl mr-4 shrink-0">
+              <img loading="lazy" alt="servbay profile image" class="crayons-avatar__image" width="100" height="100" src="https://media.dev.to/cdn-cgi/image/width=100,height=100,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F1241555%2F1ef2a30d-2cce-4f5b-93ac-61cc07264ade.jpg" />
+          </span>
+          <div>
+            <h3 class="fs-xl mb-0 lh-tight">Preview of PHP 8.4 New Features</h3>
+            <p class="opacity-75 pt-1">
+              ServBay - <time datetime="2024-05-18T04:26:28Z">May 18</time>
+            </p>
+          </div>
+        </div>
+      </a>
+      <a href="/columk1/create-and-deploy-a-discord-bot-for-free-with-flyio-dp9" data-preload-image="" class="crayons-link mt-6 block">
+        <div class="flex items-center">
+          <span class="crayons-avatar crayons-avatar--xl m:crayons-avatar--2xl mr-4 shrink-0">
+              <img loading="lazy" alt="columk1 profile image" class="crayons-avatar__image" width="100" height="100" src="https://media.dev.to/cdn-cgi/image/width=100,height=100,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F1485341%2F7ec08f30-e789-4c5e-917c-b2713d9d6b1f.png" />
+          </span>
+          <div>
+            <h3 class="fs-xl mb-0 lh-tight">Create and Deploy a Discord Bot for Free with Fly.io</h3>
+            <p class="opacity-75 pt-1">
+              Colum Kelly - <time datetime="2024-05-13T20:14:40Z">May 13</time>
+            </p>
+          </div>
+        </div>
+      </a>
+  </section>
+
+    </div>
+  </main>
+
+  <aside class="crayons-layout__sidebar-right" aria-label="Author details">
+    <div class="crayons-article-sticky grid gap-4 pb-4 break-word" id="article-show-primary-sticky-nav">
+  <div class="crayons-card crayons-card--secondary branded-7 p-4 pt-0 gap-4 grid" style="border-top-color: #000;">
+    <div class="-mt-4">
+  <a href="/avinashtechlvr" class="flex">
+    <span class="crayons-avatar crayons-avatar--xl  mr-2 shrink-0">
+      <img src="https://media.dev.to/cdn-cgi/image/width=90,height=90,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F572807%2F13dedbcb-ccad-4f93-82c1-905513bdf043.jpeg" class="crayons-avatar__image" alt="" loading="lazy" />
+    </span>
+    <span class="crayons-link crayons-subtitle-2 mt-5">Avinash Chodavarapu</span>
+  </a>
+</div>
+
+<div class="print-hidden">
+  <button name="button" type="button" data-info="{&quot;className&quot;:&quot;User&quot;,&quot;style&quot;:&quot;&quot;,&quot;id&quot;:572807,&quot;name&quot;:&quot;Avinash Chodavarapu&quot;}" class="crayons-btn follow-action-button whitespace-nowrap w-100 follow-user" aria-label="Follow user: Avinash Chodavarapu" aria-pressed="false">Follow</button>
+</div>
+  <div class="color-base-70">
+    &quot;Skilled Software Engineer in Python, C++, Go, Vue.js, React.js. Worked on ML and Web Dev projects, focusing on real-world problem-solving. Always seeking new experiences.&quot;
+  </div>
+
+  <div class="user-metadata-details">
+    <ul class="user-metadata-details-inner">
+        <li>
+          <div class="key">
+            Location
+          </div>
+          <div class="value">
+            Gurugram, India
+          </div>
+        </li>
+          <li>
+            <div class="key">
+              Education
+            </div>
+            <div class="value">
+              Indian Institute of Information Technology, Dharwad
+            </div>
+          </li>
+          <li>
+            <div class="key">
+              Work
+            </div>
+            <div class="value">
+              SDE @ SAMSUNG SDS
+            </div>
+          </li>
+      <li>
+        <div class="key">
+          Joined
+        </div>
+        <div class="value">
+          <time datetime="2021-02-03T13:01:27Z" class="date">Feb 3, 2021</time>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  </div>
+
+      <div class="crayons-card crayons-card--secondary">
+        <header class="crayons-card__header">
+          <h3 class="crayons-subtitle-2">
+            More from <a href="/avinashtechlvr">Avinash Chodavarapu</a>
+          </h3>
+        </header>
+        <div>
+            <a class="crayons-link crayons-link--contentful" href="/avinashtechlvr/javascript-ecmascript-versions-m9n">
+              JavaScript / ECMAScript Versions...
+              <div class="crayons-link__secondary -ml-1">
+                  <span class="mr-1"><span class="opacity-50">#</span>javascript</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>webdev</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>programming</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>versions</span>
+              </div>
+            </a>
+            <a class="crayons-link crayons-link--contentful" href="/avinashtechlvr/understanding-structs-in-go-a-comprehensive-guide-for-beginners-1aki">
+              Understanding Structs in Go: A Comprehensive Guide for Beginners
+              <div class="crayons-link__secondary -ml-1">
+                  <span class="mr-1"><span class="opacity-50">#</span>programming</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>tutorial</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>go</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>discuss</span>
+              </div>
+            </a>
+            <a class="crayons-link crayons-link--contentful" href="/avinashtechlvr/mastering-pointers-in-go-an-in-depth-guide-to-efficient-data-manipulation-2nco">
+              Mastering Pointers in Go: An In-Depth Guide to Efficient Data Manipulation
+              <div class="crayons-link__secondary -ml-1">
+                  <span class="mr-1"><span class="opacity-50">#</span>go</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>tutorial</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>pointer</span>
+                  <span class="mr-1"><span class="opacity-50">#</span>beginners</span>
+              </div>
+            </a>
+        </div>
+      </div>
+</div>
+
+<div class="crayons-article-sticky grid gap-4 break-word js-billboard-container" data-async-url="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2/billboards/post_sidebar"></div>
+
+  </aside>
+</div>
+
+
+<div class="mod-actions-menu print-hidden"></div>
+<div data-testid="unpublish-post-modal-container" class="unpublish-post-modal-container hidden"></div>
+
+<div class="fullscreen-code js-fullscreen-code"></div>
+<script src="https://dev.to/assets/followButtons-f2455d1f50a862b83fa006b1953e3a1644598781243cae25d3e75b13c04184fd.js" defer="defer"></script>
+<script src="https://dev.to/assets/billboard-af5f1e44773cd9d9fe565723cb6b8016081bc219fe59dd13c0a99fb581c9e27c.js" defer="defer"></script>
+<script src="https://dev.to/assets/localizeArticleDates-70147c5c6bfe350b42e020ebb2a3dd37419d83978982b5a67b6389119bf162ac.js" defer="defer"></script>
+<script src="https://dev.to/assets/articleReactions-e7ba298d64fe1f81ee65569ef6a2d32e434b04edc825641493408245ff955d74.js" defer="defer"></script>
+
+<script>
+  var waitingOnPodcast = setInterval(function() {
+  if (typeof initializePodcastPlayback !== 'undefined') {
+    initializePodcastPlayback();
+    clearInterval(waitingOnPodcast);
+  }
+}, 1);
+
+  if (document.head.querySelector('meta[name="user-signed-in"][content="true"]')) {
+  function displayPollResults(json) {
+    var totalVotes = json.voting_data.votes_count;
+    json.voting_data.votes_distribution.forEach(function(point) {
+      var pollOptionItem = document.getElementById('poll_option_list_item_'+point[0]);
+      var optionText = document.getElementById('poll_option_label_'+point[0]).textContent;
+      if (json.user_vote_poll_option_id === point[0]) {
+        var votedClass = 'optionvotedfor'
+      } else {
+        var votedClass = 'optionnotvotedfor'
+      }
+      if (totalVotes === 0) {
+        var percent = 0;
+      } else {
+        var percent = (point[1]/totalVotes)*100;
+      }
+      var roundedPercent = Math.round( percent * 10 ) / 10
+      var percentFromRight = (100-roundedPercent)
+      var html = '<span><span class="ltag-votepercent ltag-'+votedClass+'" style="right:'+percentFromRight+'%"></span>        <span class="ltag-votepercenttext">'+optionText+' — '+roundedPercent+'%</span></span>';
+      pollOptionItem.innerHTML = html;
+      pollOptionItem.classList.add('already-voted')
+      document.getElementById('showmethemoney-'+json.poll_id).innerHTML = '<span class="ltag-voting-results-count">'+totalVotes+' total votes</span>';
+    })
+  }
+
+  var polls = document.getElementsByClassName('ltag-poll');
+  for (var i = 0; i < polls.length; i += 1) {
+    var poll = polls[i]
+    var pollId = poll.dataset.pollId
+    window.fetch('/poll_votes/'+pollId)
+    .then(function(response){
+      response.json().then(
+        function(json) {
+          if (json.voted) {
+            displayPollResults(json)
+          } else {
+            var els = document.getElementById('poll_'+json.poll_id).getElementsByClassName('ltag-polloption');
+
+            for (i = 0; i < els.length; i += 1) {
+              els[i].addEventListener('click', function(e) {
+                var tokenMeta = document.querySelector("meta[name='csrf-token']")
+                if (!tokenMeta) {
+                  alert('Whoops. There was an error. Your vote was not counted. Try refreshing the page.')
+                  return
+                }
+                var csrfToken = tokenMeta.getAttribute('content')
+                var optionId = e.target.dataset.optionId
+                window.fetch('/poll_votes', {
+                  method: 'POST',
+                  headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({poll_vote: { poll_option_id: optionId } }),
+                  credentials: 'same-origin',
+                }).then(function(response){
+                  response.json().then(function(j){displayPollResults(j)})
+                })
+              });
+            }
+
+            document.getElementById('showmethemoney-'+json.poll_id).addEventListener('click', function() {
+              pollId = this.dataset.pollId
+              window.fetch('/poll_skips', {
+                method: 'POST',
+                headers: {
+                  'X-CSRF-Token': csrfToken,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({poll_skip: {poll_id: pollId }}),
+                credentials: 'same-origin',
+              }).then(function(response){
+                response.json().then(function(j){displayPollResults(j)})
+              })
+            });
+          }
+        }
+      )
+    })
+  }
+} else {
+    var els = document.getElementsByClassName('ltag-poll')
+    for (i = 0; i < els.length; i += 1) {
+      els[i].onclick = function(e) {
+        if (typeof showLoginModal !== "undefined") {
+          showLoginModal();
+        }
+      }
+    }
+}
+
+  function activateRunkitTags() {
+  if (!areAnyRunkitTagsPresent())
+    return
+
+  var checkRunkit = setInterval(function() {
+    try {
+      dynamicallyLoadRunkitLibrary()
+
+      if (typeof(RunKit) === 'undefined') {
+        return
+      }
+
+      replaceTagContentsWithRunkitWidget()
+      clearInterval(checkRunkit);
+    } catch(e) {
+      console.error(e);
+      clearInterval(checkRunkit);
+    }
+  }, 200);
+}
+
+function isRunkitTagAlreadyActive(runkitTag) {
+  return runkitTag.querySelector("iframe") !== null;
+};
+
+function areAnyRunkitTagsPresent() {
+  var presentRunkitTags = document.getElementsByClassName("runkit-element");
+
+  return presentRunkitTags.length > 0
+}
+
+function replaceTagContentsWithRunkitWidget() {
+  var targets = document.getElementsByClassName("runkit-element");
+  for (var i = 0; i < targets.length; i++) {
+    if (isRunkitTagAlreadyActive(targets[i])) {
+      continue;
+    }
+
+    var wrapperContent = targets[i].textContent;
+    if (/^(<iframe src)/.test(wrapperContent) === false) {
+      if (targets[i].children.length > 0) {
+        var preamble = targets[i].children[0].textContent;
+        var content = targets[i].children[1].textContent;
+        targets[i].innerHTML = "";
+        var notebook = RunKit.createNotebook({
+          element: targets[i],
+          source: content,
+          preamble: preamble
+        });
+      }
+    }
+  }
+};
+
+function dynamicallyLoadRunkitLibrary() {
+  if (typeof(dynamicallyLoadScript) === "undefined")
+    return
+
+  dynamicallyLoadScript("//embed.runkit.com")
+}
+
+activateRunkitTags();
+
+    // Listen for resize events and match them to the iframe
+  window.addEventListener('message', function(event) {
+    if (event.origin.startsWith('https://platform.twitter.com')) {
+        var iframes = document.getElementsByTagName('iframe');
+        for (var i = 0; i < iframes.length; i++) {
+          if (event.source === iframes[i].contentWindow) { // iframes which match the event
+            var iframe = iframes[i];
+            var data = event.data['twttr.embed'];
+            if (data && data['method'] === 'twttr.private.resize' && data['params'] && data['params']['0']) {
+              iframe.style.height = data['params']['0']['height'] + 0.5 + 'px';
+              iframe.style.minHeight = data['params']['0']['height'] + 0.5 + 'px';
+              iframe.style.width = data['params']['0']['width'] + 'px !important';
+            }
+            break;
+          }
+        }
+    }
+}, false);
+
+// Legacy support: We have shifted up how we render tweets, but still need to render
+// the old way for old embed. This could eventually be removed.
+var videoPreviews = document.getElementsByClassName("ltag__twitter-tweet__media__video-wrapper");
+[].forEach.call(videoPreviews, function(el) {
+  el.onclick = function(e) {
+    var divHeight = el.offsetHeight;
+    el.style.maxHeight = divHeight + "px";
+    el.getElementsByClassName("ltag__twitter-tweet__media--video-preview")[0].style.display = "none";
+    el.getElementsByClassName("ltag__twitter-tweet__video")[0].style.display = "block";
+    el.getElementsByTagName("video")[0].play();
+  }
+});
+var tweets = document.getElementsByClassName("ltag__twitter-tweet__main");
+[].forEach.call(tweets, function(tweet){
+  tweet.onclick = function(e) {
+    if (e.target.nodeName == "A" || e.target.parentElement.nodeName == "A") {
+      return;
+    }
+    window.open(tweet.dataset.url,"_blank");
+  }
+});
+
+</script>
+<div class="js-billboard-container pb-4 crayons-layout__comments-billboard" data-async-url="/avinashtechlvr/organizing-code-into-packages-and-importing-in-go-a-beginners-guide-gh2/billboards/post_fixed_bottom"></div>
+
+    <div id="runtime-banner-container"></div>
+  </div>
+</div>
+    
+<footer id="footer" class="crayons-footer print-hidden">
+  <div id="footer-container" class="crayons-footer__container">
+    <p class="fs-s crayons-footer__description">
+      <a class="c-link c-link--branded fw-medium" aria-label="DEV Community Home" href="/">DEV Community</a> — A constructive and inclusive social network for software developers. With you every step of your journey.
+    </p>
+
+    <ul class="footer__nav-links flex gap-2 justify-center flex-wrap fs-s p-0" style="" />
+        <li class="footer__nav-link flex items-center">
+    <a href="/">
+      Home
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/pod">
+      Podcasts
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/videos">
+      Videos
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/tags">
+      Tags
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/help">
+      DEV Help
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="https://shop.forem.com/">
+      Forem Shop
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/advertise">
+      Advertise on DEV
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/challenges">
+      DEV Challenges
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/showcase">
+      DEV Showcase
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/about">
+      About
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/contact">
+      Contact
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/guides">
+      Guides
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/software-comparisons">
+      Software comparisons
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+
+    </ul>
+
+    <ul class="footer__nav-links flex gap-2 justify-center flex-wrap fs-s p-0" style="" />
+        <li class="footer__nav-link flex items-center">
+    <a href="/code-of-conduct">
+      Code of Conduct
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/privacy">
+      Privacy Policy
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+  <li class="footer__nav-link flex items-center">
+    <a href="/terms">
+      Terms of use
+    </a>
+    <span class="dot ml-2"></span>
+  </li>
+
+    </ul>
+
+    <div class="fs-s">
+      <p>Built on <a class="c-link c-link--branded" target="_blank" rel="noopener" href="https://www.forem.com">Forem</a> — the <a target="_blank" rel="noopener" class="c-link c-link--branded" href="https://dev.to/t/opensource">open source</a> software that powers <a target="_blank" rel="noopener" class="c-link c-link--branded" href="https://dev.to">DEV</a> and other inclusive communities.</p>
+      <p>Made with love and <a target="_blank" rel="noopener" class="c-link c-link--branded" href="https://dev.to/t/rails">Ruby on Rails</a>. DEV Community <span title="copyright">&copy;</span> 2016 - 2024.</p>
+    </div>
+  </div>
+</footer>
+<div id="snack-zone"></div>
+
+    <div id="global-signup-modal" class="authentication-modal hidden">
+  <div class="authentication-modal__container">
+    <figure class="authentication-modal__image-container">
+      <img class="authentication-modal__image" src="https://media.dev.to/cdn-cgi/image/width=190,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8j7kvp660rqzt99zui8e.png"
+        alt="DEV Community" loading="lazy" />
+    </figure>
+    <div class="authentication-modal__content">
+      <p class="authentication-modal__description">
+          We&#39;re a place where coders share, stay up-to-date and grow their careers.
+      </p>
+    </div>
+    <div class="authentication-modal__actions">
+      <a href="/enter" class="crayons-btn" aria-label="Log in" data-no-instant>
+        Log in
+      </a>
+      <a href="/enter?state=new-user" class="crayons-btn crayons-btn--ghost-brand js-global-signup-modal__create-account" aria-label="Create new account" data-no-instant>
+        Create account
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://dev.to/assets/signupModalShortcuts-0b25469b985100a01e94cbd7fccaf7f0a4d776e129aac65c766aa32cb28ab29a.js" defer="defer"></script>
+
+    <div id="cookie-consent"></div>
+  <div id="i18n-translations" data-translations="{&quot;en&quot;:{&quot;core&quot;:{&quot;add_comment&quot;:&quot;Add comment&quot;,&quot;beta&quot;:&quot;beta&quot;,&quot;comment&quot;:&quot;Comment&quot;,&quot;copy_link&quot;:&quot;Copy link&quot;,&quot;edit_profile&quot;:&quot;Edit profile&quot;,&quot;follow&quot;:&quot;Follow&quot;,&quot;follow_back&quot;:&quot;Follow back&quot;,&quot;following&quot;:&quot;Following&quot;,&quot;like&quot;:&quot;Like&quot;,&quot;loading&quot;:&quot;loading...&quot;,&quot;reaction&quot;:&quot;Reaction&quot;,&quot;report_abuse&quot;:&quot;Report abuse&quot;,&quot;search&quot;:&quot;Search&quot;,&quot;success_settings&quot;:&quot;Successfully updated settings.&quot;,&quot;counted_organization&quot;:{&quot;one&quot;:&quot;%{count} organization&quot;,&quot;other&quot;:&quot;%{count} organizations&quot;},&quot;counted_user&quot;:{&quot;one&quot;:&quot;%{count} person&quot;,&quot;other&quot;:&quot;%{count} people&quot;},&quot;not_following&quot;:&quot;You&#39;re not following anyone&quot;,&quot;following_everyone&quot;:&quot;You&#39;re following %{details} (everyone)&quot;,&quot;you_are_following&quot;:&quot;You&#39;re following&quot;,&quot;and&quot;:&quot;and&quot;}}}"></div>
+  <div id="reaction-category-resources" class="hidden" aria-hidden="true">
+    <img data-name="Like" data-slug="like" data-position="1" src="https://dev.to/assets/sparkle-heart-5f9bee3767e18deb1bb725290cb151c25234768a0e9a2bd39370c382d02920cf.svg" width="18" height="18" />
+    <img data-name="Unicorn" data-slug="unicorn" data-position="2" src="https://dev.to/assets/multi-unicorn-b44d6f8c23cdd00964192bedc38af3e82463978aa611b4365bd33a0f1f4f3e97.svg" width="18" height="18" />
+    <img data-name="Exploding Head" data-slug="exploding_head" data-position="3" src="https://dev.to/assets/exploding-head-daceb38d627e6ae9b730f36a1e390fca556a4289d5a41abb2c35068ad3e2c4b5.svg" width="18" height="18" />
+    <img data-name="Raised Hands" data-slug="raised_hands" data-position="4" src="https://dev.to/assets/raised-hands-74b2099fd66a39f2d7eed9305ee0f4553df0eb7b4f11b01b6b1b499973048fe5.svg" width="18" height="18" />
+    <img data-name="Fire" data-slug="fire" data-position="5" src="https://dev.to/assets/fire-f60e7a582391810302117f987b22a8ef04a2fe0df7e3258a5f49332df1cec71e.svg" width="18" height="18" />
+</div>
+
+  <script defer>
+    if (document.querySelector('.articletag-marquee') && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        // Step 2: Find the first .crayons-article__body element
+        var articleBody = document.querySelector('.crayons-article__body');
+        
+        if (articleBody) {
+            // Step 3: Extract inner text from the article body
+            var articleText = articleBody.innerText;
+            
+            // Step 4: Create a marquee and add it to the bottom of the page
+            var marquee = document.createElement('marquee');
+            marquee.textContent = articleText;
+            marquee.style.width = '100%';
+            marquee.style.position = 'fixed';
+            marquee.style.bottom = '0';
+            marquee.style.backgroundColor = '#ffffff'; // Set background color if needed
+            marquee.style.color = '#000000'; // Set text color if needed
+            marquee.style.padding = '10px'; // Add some padding for better visibility
+            
+            document.body.appendChild(marquee);
+        }
+    }
+</script>
+  </body>
+  </html>
