@@ -65,31 +65,30 @@ type Scrapper struct {
 
 // }
 
-func DetectOcc(search io.Reader, searchWord string) (io.Reader, error) {
+func DetectOcc(search *io.Reader, searchWord string) (*io.Reader, error) {
 
-	buf := new(strings.Builder)
-	_, err := io.Copy(buf, search)
+	if search == nil {
+		return nil, fmt.Errorf("the io Reader is nil")
+	}
 
+	bRes, err := io.ReadAll(*search)
 	if err != nil {
-
 		return nil, fmt.Errorf("%s", "cant read from io Reader")
 	}
 
 	//place in the text where word was found
-	foundIndex := strings.Index(buf.String(), searchWord)
+	foundIndex := strings.Index(string(bRes), searchWord)
 	beforeIn := foundIndex - 10
 	aftertIndex := foundIndex + 10
 
-	surround := string([]rune(buf.String())[beforeIn:aftertIndex])
+	surround := string([]rune(string(bRes))[beforeIn:aftertIndex])
 
-	reader := strings.NewReader(surround)
+	var reader io.Reader = strings.NewReader(surround)
 
 	if foundIndex != 0 {
-
-		return reader, nil
-
+		return &reader, nil
 	}
 
-	return reader, nil
+	return nil, nil
 
 }
