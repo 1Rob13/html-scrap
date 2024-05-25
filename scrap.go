@@ -2,10 +2,7 @@ package scrap
 
 import (
 	"fmt"
-	"html"
 	"io"
-	"os"
-	"strconv"
 	"strings"
 )
 
@@ -17,51 +14,58 @@ type Subset struct {
 	Selected io.Reader
 }
 
-func ExtractText(r io.Reader, search string) (*Subset, error) {
+type Scrapper struct {
 
-	b, err := io.ReadAll(r)
-
-	if err != nil {
-
-		return nil, fmt.Errorf("cant read input from reader")
-	}
-
-	str := html.EscapeString(string(b))
-
-	routines := os.Getenv("max_procs")
-	i, err := strconv.Atoi(routines)
-
-	if err != nil {
-		return nil, fmt.Errorf("no mac_procs env variable set to correct format")
-	}
-	chars := []rune(str)
-
-	routineTextSize := len(chars) / i
-
-	startIndex := 0
-	endIndex := routineTextSize
-
-	//amount of text parts
-	for index := range i {
-
-		reader := strings.NewReader(string(chars[startIndex:endIndex]))
-
-		//how to turnover result? need channel?
-		detectOcc(reader, search)
-
-		startIndex = routineTextSize
-
-		endIndex = index * routineTextSize
-
-	}
-
-	return &Subset{}, nil
-
-	//w8 for all routines to finish (the cancel each other out)
-
+	// cfg config.Config
 }
 
-func detectOcc(search io.Reader, searchWord string) (io.Reader, error) {
+// func ExtractText(r io.Reader, search string) (*Subset, error) {
+
+// 	b, err := io.ReadAll(r)
+
+// 	if err != nil {
+
+// 		return nil, fmt.Errorf("cant read input from reader")
+// 	}
+
+// 	str := html.EscapeString(string(b))
+
+// 	if err != nil {
+// 		return nil, fmt.Errorf("no mac_procs env variable set to correct format")
+// 	}
+// 	chars := []rune(str)
+
+// 	routineTextSize := len(chars) / routines
+
+// 	startIndex := 0
+// 	endIndex := routineTextSize
+
+// 	//amount of text parts
+// 	for index := range routines {
+
+// 		reader := strings.NewReader(string(chars[startIndex:endIndex]))
+
+// 		//how to turnover result? need channel?
+// 		resultReader, err := DetectOcc(reader, search)
+
+// 		if err != nil {
+
+// 			return nil, fmt.Errorf("detect Occurence function failed because %v")
+// 		}
+
+// 		startIndex = routineTextSize
+
+// 		endIndex = index * routineTextSize
+
+// 	}
+
+// 	return &Subset{}, nil
+
+// 	//w8 for all routines to finish (the cancel each other out)
+
+// }
+
+func DetectOcc(search io.Reader, searchWord string) (io.Reader, error) {
 
 	buf := new(strings.Builder)
 	_, err := io.Copy(buf, search)
@@ -73,8 +77,8 @@ func detectOcc(search io.Reader, searchWord string) (io.Reader, error) {
 
 	//place in the text where word was found
 	foundIndex := strings.Index(buf.String(), searchWord)
-	beforeIn := foundIndex - 200
-	aftertIndex := foundIndex + 200
+	beforeIn := foundIndex - 10
+	aftertIndex := foundIndex + 10
 
 	surround := string([]rune(buf.String())[beforeIn:aftertIndex])
 

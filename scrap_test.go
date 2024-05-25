@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -19,7 +20,7 @@ func TestExtractText(t *testing.T) {
 
 	newReader := bytes.NewReader(bFile)
 
-	subset, err := ExtractText(newReader, "test")
+	subset, err := DetectOcc(newReader, "test")
 
 	if err != nil {
 
@@ -27,7 +28,7 @@ func TestExtractText(t *testing.T) {
 		t.Fail()
 	}
 
-	bResult, err := io.ReadAll(subset.Selected)
+	bResult, err := io.ReadAll(subset)
 
 	if err != nil {
 
@@ -35,11 +36,11 @@ func TestExtractText(t *testing.T) {
 		t.Fail()
 	}
 
-	EXPECTED := "hi this is a test"
+	EXPECTED := `uction to test for p`
 
-	if string(bResult) != "hi this is a test" {
+	if strings.Compare(EXPECTED, string(bResult)) != 0 {
 
-		t.Errorf("not correct expected result failed becausse (%s) is not (%s)", string(bResult), EXPECTED)
+		t.Errorf("not correct expected result failed becausse (%s) is not (%s), strings compare %v", string(bResult), EXPECTED, strings.Compare(EXPECTED, string(bResult)))
 		t.Fail()
 	}
 }
