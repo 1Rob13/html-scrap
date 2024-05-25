@@ -1,8 +1,6 @@
 package scrap
 
 import (
-	"bytes"
-	"context"
 	"fmt"
 	"html"
 	"io"
@@ -15,15 +13,11 @@ type ScrapperHTML interface {
 	ExtractText()
 }
 
-type Scrapper struct {
-}
-
-type Text struct {
+type Subset struct {
 	Selected io.Reader
-	All      io.Reader
 }
 
-func (s *Scrapper) ExtractText(r io.Reader, search string) (*Text, error) {
+func ExtractText(r io.Reader, search string) (*Subset, error) {
 
 	b, err := io.ReadAll(r)
 
@@ -47,14 +41,13 @@ func (s *Scrapper) ExtractText(r io.Reader, search string) (*Text, error) {
 	startIndex := 0
 	endIndex := routineTextSize
 
-	ctxB := context.Background()
-	ctx, cancel := context.WithCancel(ctxB)
-	sigs := make(chan Text, 1)
 	//amount of text parts
 	for index := range i {
 
+		reader := strings.NewReader(string(chars[startIndex:endIndex]))
+
 		//how to turnover result? need channel?
-		go detectOcc(ctx, cancel, sigs, string(chars[startIndex:endIndex]), search)
+		detectOcc(reader, search)
 
 		startIndex = routineTextSize
 
@@ -62,36 +55,37 @@ func (s *Scrapper) ExtractText(r io.Reader, search string) (*Text, error) {
 
 	}
 
-	msg := <-sigs
-	return &msg, nil
+	return &Subset{}, nil
 
 	//w8 for all routines to finish (the cancel each other out)
 
 }
 
-func detectOcc(context context.Context, cancelCall context.CancelFunc, sig chan Text, search string, searchWord string) {
+func detectOcc(search io.Reader, searchWord string) (io.Reader, error) {
+
+	buf := new(strings.Builder)
+	_, err := io.Copy(buf, search)
+
+	if err != nil {
+
+		return nil, fmt.Errorf("%s", "cant read from io Reader")
+	}
 
 	//place in the text where word was found
-	foundIndex := strings.Index(search, searchWord)
-
-	//get last line break
-
+	foundIndex := strings.Index(buf.String(), searchWord)
 	beforeIn := foundIndex - 200
 	aftertIndex := foundIndex + 200
 
-	surround = string([]rune(search)[beforeIn:aftertIndex])
+	surround := string([]rune(buf.String())[beforeIn:aftertIndex])
 
-	io.Reader.Read([]byte(surround))
-
-	//get next line break
-
-	//copy all to io.Reader
+	reader := strings.NewReader(surround)
 
 	if foundIndex != 0 {
 
-		sig <- Text{ Selected: }
+		return reader, nil
 
-		cancelCall()
 	}
+
+	return reader, nil
 
 }
