@@ -14,9 +14,12 @@ type Subset struct {
 	Selected io.Reader
 }
 
-type Scrapper struct {
+type Config struct {
+	VisionSize int
+}
 
-	// cfg config.Config
+type Scrapper struct {
+	cfg Config
 }
 
 // func ExtractText(r io.Reader, search string) (*Subset, error) {
@@ -65,7 +68,12 @@ type Scrapper struct {
 
 // }
 
-func DetectOcc(search *io.Reader, searchWord string) (*io.Reader, error) {
+func NewScrapper(visionSize int) *Scrapper {
+
+	return &Scrapper{cfg: Config{VisionSize: visionSize}}
+}
+
+func (s *Scrapper) DetectOcc(search *io.Reader, searchWord string) (*io.Reader, error) {
 
 	if search == nil {
 		return nil, fmt.Errorf("the io Reader is nil")
@@ -78,8 +86,8 @@ func DetectOcc(search *io.Reader, searchWord string) (*io.Reader, error) {
 
 	//place in the text where word was found
 	foundIndex := strings.Index(string(bRes), searchWord)
-	beforeIn := foundIndex - 10
-	aftertIndex := foundIndex + 10
+	beforeIn := max(foundIndex-s.cfg.VisionSize, 0)
+	aftertIndex := min(foundIndex+s.cfg.VisionSize, len(string(bRes)))
 
 	surround := string([]rune(string(bRes))[beforeIn:aftertIndex])
 

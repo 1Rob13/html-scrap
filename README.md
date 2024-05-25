@@ -2,14 +2,14 @@
 
 TODO Features:
 
-remove allocations onlu use pointer (x)
+remove allocations only use pointer (/)
 
-Limit index of searched sequence, so cant out of bound(x)
+Limit index of searched sequence, so cant out of bound(/)
 
 increase scraping more so tags are completly also removed (x)
 
-add time to test (x)
+add time to test (/)
 
-add config to scrap struct (x)
+add config to scrap struct (/)
 
 Implement multi routine search with cancel context (x)
